@@ -2,13 +2,14 @@ ArrayList<Particle> particles = new ArrayList<Particle>();
 float offsetX, offsetY;
 Level[] levels = new Level[3];
 byte c = 0;
-Entity player = new Entity(80, 304);
+Entity player = new Entity(40, 304);
 boolean up, down, left, right;
 PImage[] tileSprites;
 PImage[][] joinedSprites;
 PImage[][] charSprites;
 int animation, time;
 int wait = 100;
+
 
 //AI related stuff beyond this point
 int topFitness = 0;
@@ -38,11 +39,6 @@ void setup() {
 
 void draw() {
   background(250);
-  if (mousePressed && mouseButton == RIGHT) {
-    frameRate(5);
-  } else {
-    frameRate(120);
-  }
   if (millis() - time >= wait) {
     animation++;
     if (animation > 1000) {
@@ -65,6 +61,15 @@ void draw() {
     }
 
     //AI
+    if (mousePressed) {
+      if (mouseButton == LEFT) {
+        frameRate(60);
+      } else if (mouseButton == RIGHT) {
+        frameRate(10);
+      } else if (mouseButton == CENTER) {
+        frameRate(200);
+      }
+    }
     if (runningSim) {
       if (topReplay == -1) {
         currentGeneration.update();
@@ -75,7 +80,6 @@ void draw() {
         }
       }
     }
-    //rect();
   }
   offsetX = player.x - (width - player.w)/2;
   offsetY = player.y - (height - player.h)/2;
@@ -114,36 +118,32 @@ boolean inBounds(int x, int y, int lw, int lh) {
 }
 
 void keyPressed() {
-  if (key == CODED) {
-    if (keyCode == UP) {
-      up = true;
-    }
-    if (keyCode == DOWN) {
-      down = true;
-    }
-    if (keyCode == LEFT) {
-      left = true;
-    }
-    if (keyCode == RIGHT) {
-      right = true;
-    }
+  if (key == 'w' || key == 'W') {
+    up = true;
+  }
+  if (key == 's' || key == 'S') {
+    down = true;
+  }
+  if (key == 'a' || key == 'A') {
+    left = true;
+  }
+  if (key == 'd' || key == 'D') {
+    right = true;
   }
 }
 
 void keyReleased() {
-  if (key == CODED) {
-    if (keyCode == UP) {
-      up = false;
-    }
-    if (keyCode == DOWN) {
-      down = false;
-    }
-    if (keyCode == LEFT) {
-      left = false;
-    }
-    if (keyCode == RIGHT) {
-      right = false;
-    }
+  if (key == 'w' || key == 'W') {
+    up = false;
+  }
+  if (key == 's' || key == 'S') {
+    down = false;
+  }
+  if (key == 'a' || key == 'A') {
+    left = false;
+  }
+  if (key == 'd' || key == 'D') {
+    right = false;
   }
   if (key == ENTER) {
     if (!runningSim) {

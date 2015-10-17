@@ -20,7 +20,7 @@ class Generation {
   void restartIndividual() {
     individuals.get(currentIndividual).fitness = 0;
     individuals.get(currentIndividual).fitnessCount = 1;
-    player = new Entity(80, 304);
+    player = new Entity(40, 304);
   }
 
   void update() {
@@ -38,7 +38,7 @@ class Generation {
             }
           }
           currentIndividual++;
-          player = new Entity(80, 304);
+          player = new Entity(40, 304);
         }
       }
     } else {
@@ -53,16 +53,16 @@ class Individual {
   int generationNumber;
   ArrayList<Neuron> neurons = new ArrayList<Neuron>();
   int fitness = 0;
-  int fitnessCount = 1;
+  int fitnessCount = 2;
   Individual(int tid, int generationNumber, ArrayList<Neuron> tneurons) {
     id = tid;
     neurons = tneurons;
   }
 
   boolean updateIndividual() {
-    if (player.x > fitness) {
-      fitness = player.x;
-      fitnessCount = 1 + int(fitness/10);
+    if (player.x - 40 > fitness) {
+      fitness = player.x - 40;
+      fitnessCount = 3 + int(fitness/10);
       if (fitness > topFitness) {
         topFitness = fitness;
       }
