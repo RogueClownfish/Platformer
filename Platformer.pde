@@ -2,7 +2,7 @@ ArrayList<Particle> particles = new ArrayList<Particle>();
 float offsetX, offsetY;
 Level[] levels = new Level[3];
 byte c = 0;
-Entity player = new Entity(40, 1184);
+Entity player;
 boolean up, down, left, right;
 PImage[] tileSprites;
 PImage[][] joinedSprites;
@@ -10,6 +10,7 @@ PImage[][] charSprites;
 int animation, time;
 int wait = 100;
 int playSpeed = 60;
+int spawnX, spawnY;
 
 
 //AI related stuff beyond this point
@@ -33,6 +34,8 @@ void setup() {
   loadImages();
   offsetX = 0;
   offsetY = 0;
+  spawnX = 40;
+  spawnY = 1184;
   noStroke();
   noSmooth();
   levels[c] = new Level();
@@ -40,6 +43,7 @@ void setup() {
   for (int i = 0; i < topMax; i++) {
     topIndividuals[i] = new Individual(new ArrayList<Neuron>());
   }
+   player = new Entity(spawnX, spawnY);
 }
 
 void draw() {
@@ -90,7 +94,7 @@ void draw() {
         if (replayIndividual.updateIndividual()) {
           replayIndividual.fitness = 0;
           replayIndividual.fitnessCount = 1;     
-          player = new Entity(40, 1184);
+          player = new Entity(spawnX, spawnY);
         }
       }
     }
@@ -183,7 +187,7 @@ void keyReleased() {
       replayIndividual = topIndividuals[topReplay];
       replayIndividual.fitness = 0;
       replayIndividual.fitnessCount = 1;
-      player = new Entity(40, 1184);
+      player = new Entity(spawnX, spawnY);
     }
   }
 }

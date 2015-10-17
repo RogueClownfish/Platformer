@@ -18,7 +18,7 @@ class Generation {
   void restartIndividual() {
     individuals.get(currentIndividual).fitness = 0;
     individuals.get(currentIndividual).fitnessCount = 1;
-    player = new Entity(40, 1184);
+    player = new Entity(spawnX, spawnY);
   }
 
   void newChild(ArrayList<Neuron> neurons1, ArrayList<Neuron> neurons2) {
@@ -50,7 +50,7 @@ class Generation {
             }
           }
           currentIndividual++;
-          player = new Entity(40, 1184);
+          player = new Entity(spawnX, spawnY);
         } else {
           return true;
         }
