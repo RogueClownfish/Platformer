@@ -1,14 +1,12 @@
 class Generation {
-  int id;
   int currentIndividual = 0;
   ArrayList<Individual> individuals = new ArrayList<Individual>();
-  Generation(int tid, ArrayList<Individual> tindividuals) {
-    id = tid;
+  Generation(ArrayList<Individual> tindividuals) {
     individuals = tindividuals;
   }
 
   void randomIndividual() {
-    individuals.add(new Individual(currentIndividual, id, new ArrayList<Neuron>()));
+    individuals.add(new Individual(new ArrayList<Neuron>()));
     for (int i = 0; i < 10; i++) {
       individuals.get(individuals.size()-1).randomNeuron();
       if (int(random(0, 10)) <= i) {
@@ -20,10 +18,24 @@ class Generation {
   void restartIndividual() {
     individuals.get(currentIndividual).fitness = 0;
     individuals.get(currentIndividual).fitnessCount = 1;
-    player = new Entity(40, 304);
+    player = new Entity(40, 1184);
   }
 
-  void update() {
+  void newChild(ArrayList<Neuron> neurons1, ArrayList<Neuron> neurons2) {
+    int neuronCount = (neurons1.size()+neurons2.size())/2 + int(random(abs(neurons1.size()-neurons2.size())));
+    ArrayList<Neuron> neuronsOut = new ArrayList<Neuron>();
+    for (int i = 0; i < neuronCount; i++) {
+      boolean parent = random(1) < 0.5;
+      if ((parent || neurons2.size() == 0) && neurons1.size() > 0) {
+        neuronsOut.add(neurons1.get(int(random(neurons1.size()))));
+      } else {
+        neuronsOut.add(neurons2.get(int(random(neurons2.size()))));
+      }
+    }
+    individuals.add(new Individual(neuronsOut));
+  }
+
+  boolean update() {
     if (currentIndividual < individuals.size()-1) {
       if (individuals.get(currentIndividual).updateIndividual()) {
         if (currentIndividual < individuals.size()) {
@@ -38,24 +50,24 @@ class Generation {
             }
           }
           currentIndividual++;
-          player = new Entity(40, 304);
+          player = new Entity(40, 1184);
+        } else {
+          return true;
         }
       }
     } else {
-      runningSim = false;
+      return true;
     }
+    return false;
   }
 }
 
 
 class Individual {
-  int id;
-  int generationNumber;
   ArrayList<Neuron> neurons = new ArrayList<Neuron>();
   int fitness = 0;
   int fitnessCount = 2;
-  Individual(int tid, int generationNumber, ArrayList<Neuron> tneurons) {
-    id = tid;
+  Individual(ArrayList<Neuron> tneurons) {
     neurons = tneurons;
   }
 
@@ -69,10 +81,10 @@ class Individual {
     } else {
       fitnessCount--;
     }
-    if (mousePressed) {
+    if (showNetwork) {
       fill(255, 0, 0, 40);
       noStroke();
-      rect(player.x - boxRadius - offsetX, player.y - boxRadius - offsetY, boxRadius * 2, boxRadius * 2);
+      rect(player.x - boxRadius - offsetX + player.w/2, player.y - boxRadius - offsetY + player.h/2, boxRadius * 2, boxRadius * 2);
     }
     up = false;    //check neurons
     right = false;
@@ -106,8 +118,46 @@ class Individual {
     }
   }
 
+  void mutateNeurons() {
+    for (int i = 0; i < 3; i++) {
+      if (random(1) <= mutationChance) {  //add new (random) neuron
+        randomNeuron();
+      }
+    }
+    for (int i = 0; i < neurons.size(); i++) {
+      if (random(1) <= mutationChance) {  //will mutate this neuron!
+        if (random(1) <= mutationChance) {  //move neuron
+          neurons.get(i).x += int(random(-40, 40));
+          neurons.get(i).y += int(random(-40, 40));
+          if (neurons.get(i).x < -boxRadius) {
+            neurons.get(i).x = -boxRadius;
+          } else if (neurons.get(i).x > boxRadius) {
+            neurons.get(i).x = boxRadius;
+          }
+          if (neurons.get(i).y < -boxRadius) {
+            neurons.get(i).y = -boxRadius;
+          } else if (neurons.get(i).y > boxRadius) {
+            neurons.get(i).y = boxRadius;
+          }
+        }
+        if (random(1) <= mutationChance) {  //invert neuron
+          neurons.get(i).invert = !neurons.get(i).invert;
+        }
+        if (random(1) <= mutationChance) {  //change neuron input
+          neurons.get(i).in = byte(random(4));
+        }
+        if (random(1) <= mutationChance) {  //change neuron output
+          neurons.get(i).out = byte(random(1, 4));
+        }
+        if (random(1) <= mutationChance/2 && i > 1) {  //KILL NEURON (smaller chance)
+          neurons.remove(i);
+        }
+      }
+    }
+  }
+
   void randomNeuron() {
-    neurons.add(new Neuron(int(random(-boxRadius, boxRadius)), int(random(-boxRadius, boxRadius)), byte(random(4)), byte(random(1, 4)), boolean(int(random(1.1)))));
+    neurons.add(new Neuron(int(random(-boxRadius, boxRadius)), int(random(-boxRadius, boxRadius)), byte(random(4)), byte(random(1, 4)), random(1) < 0.4));
   }
 }
 
@@ -142,8 +192,8 @@ class Neuron {
       stroke(0);
     }
     boolean check = false;
-    if (x <= boxRadius && x >= -boxRadius && y <= boxRadius && y >= -boxRadius && inBounds((player.x + x)/40, (player.y + y)/40, levels[c].levelWidth, levels[c].levelHeight)) {
-      switch (levels[c].tiles[(player.x + x)/40][(player.y + y)/40][1].type) {
+    if (x <= boxRadius && x >= -boxRadius && y <= boxRadius && y >= -boxRadius && inBounds((player.x + x + player.w/2)/40, (player.y + y + player.h/2)/40, levels[c].levelWidth, levels[c].levelHeight)) {
+      switch (levels[c].tiles[(player.x + x + player.w/2)/40][(player.y + y + player.h/2)/40][1].type) {
       case 0:  //air
         if (in == 0) {
           check = true;
@@ -183,13 +233,13 @@ class Neuron {
     } else if (in == 0) {
       check = true;
     }
-    if (mousePressed) {
+    if (showNetwork) {
       if (out == 1) {
-        triangle(player.x + x - offsetX - 4, player.y + y - offsetY, player.x + x - offsetX, player.y + y - offsetY - 4, player.x + x - offsetX + 4, player.y + y - offsetY);
+        triangle(player.x + x - offsetX - 4 + player.w/2, player.y + y - offsetY + player.h/2, player.x + x - offsetX + player.w/2, player.y + y - offsetY - 4 + player.h/2, player.x + x - offsetX + 4 + player.w/2, player.y + y - offsetY + player.h/2);
       } else if (out == 2) {
-        triangle(player.x + x - offsetX + 4, player.y + y - offsetY, player.x + x - offsetX, player.y + y - offsetY - 4, player.x + x - offsetX, player.y + y - offsetY + 4);
+        triangle(player.x + x - offsetX + 4 + player.w/2, player.y + y - offsetY + player.h/2, player.x + x - offsetX + player.w/2, player.y + y - offsetY - 4 + player.h/2, player.x + x - offsetX + player.w/2, player.y + y - offsetY + 4 + player.h/2);
       } else if (out == 3) {
-        triangle(player.x + x - offsetX - 4, player.y + y - offsetY, player.x + x - offsetX, player.y + y - offsetY - 4, player.x + x - offsetX, player.y + y - offsetY + 4);
+        triangle(player.x + x - offsetX - 4 + player.w/2, player.y + y - offsetY + player.h/2, player.x + x - offsetX + player.w/2, player.y + y - offsetY - 4 + player.h/2, player.x + x - offsetX + player.w/2, player.y + y - offsetY + 4 + player.h/2);
       } else {
         rect(player.x + x - offsetX - 3, player.y + y - offsetY - 3, 6, 6);
       }
