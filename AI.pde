@@ -74,7 +74,7 @@ class Individual {
   boolean updateIndividual() {
     if (player.x - 40 > fitness) {
       fitness = player.x - 40;
-      fitnessCount = 3 + int(fitness/10);
+      fitnessCount = 3 + int(fitness/20);
       if (fitness > topFitness) {
         topFitness = fitness;
       }
