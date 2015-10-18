@@ -6,7 +6,7 @@ class Generation {
   }
 
   void randomIndividual() {
-    individuals.add(new Individual(new ArrayList<Neuron>()));
+    individuals.add(new Individual(new ArrayList<Neuron>(), color(random(225), random(225), random(225))));
     for (int i = 0; i < 10; i++) {
       individuals.get(individuals.size()-1).randomNeuron();
       if (int(random(0, 10)) <= i) {
@@ -21,18 +21,26 @@ class Generation {
     player = new Entity(spawnX, spawnY);
   }
 
-  void newChild(ArrayList<Neuron> neurons1, ArrayList<Neuron> neurons2) {
+  void newChild(ArrayList<Neuron> neurons1, ArrayList<Neuron> neurons2, color color1, color color2) {
     int neuronCount = (neurons1.size()+neurons2.size())/2 + int(random(abs(neurons1.size()-neurons2.size())));
     ArrayList<Neuron> neuronsOut = new ArrayList<Neuron>();
     for (int i = 0; i < neuronCount; i++) {
       boolean parent = random(1) < 0.5;
-      if ((parent || neurons2.size() == 0) && neurons1.size() > 0) {
-        neuronsOut.add(neurons1.get(int(random(neurons1.size()))));
+      if (parent) {
+        if (neurons1.size() > 0) {
+          neuronsOut.add(neurons1.get(int(random(neurons1.size()))));
+        } else {
+          neuronsOut.add(new Neuron(int(random(-boxRadius, boxRadius)), int(random(-boxRadius, boxRadius)), byte(random(4)), byte(random(1, 4)), random(1) < 0.4));
+        }
       } else {
-        neuronsOut.add(neurons2.get(int(random(neurons2.size()))));
+        if (neurons2.size() > 0) {
+          neuronsOut.add(neurons2.get(int(random(neurons2.size()))));
+        } else {
+          neuronsOut.add(new Neuron(int(random(-boxRadius, boxRadius)), int(random(-boxRadius, boxRadius)), byte(random(4)), byte(random(1, 4)), random(1) < 0.4));
+        }
       }
     }
-    individuals.add(new Individual(neuronsOut));
+    individuals.add(new Individual(neuronsOut, color(red(color1)+red(color2)/2, green(color1)+green(color2)/2, blue(color1)+blue(color2)/2)));
   }
 
   boolean update() {
@@ -41,13 +49,17 @@ class Generation {
         if (currentIndividual < individuals.size()) {
           int tempfit = individuals.get(currentIndividual).fitness;
           for (int i = 0; i < topMax; i++) { 
-            if (tempfit > topIndividuals[i].fitness) {
+            if (tempfit > topIndividuals[i].fitness) {  //put into top 10 or whatever
               for (int j = topMax-1; j > i; j--) {
                 topIndividuals[j] = topIndividuals[j-1];
               }
-              topIndividuals[i] = individuals.get(currentIndividual);
+              topIndividuals[i] = individuals.get(currentIndividual);              
               break;
             }
+          }
+          println();
+          for (int j = 0; j < topMax; j++) {
+            println(topIndividuals[j].fitness);
           }
           currentIndividual++;
           player = new Entity(spawnX, spawnY);
@@ -67,8 +79,10 @@ class Individual {
   ArrayList<Neuron> neurons = new ArrayList<Neuron>();
   int fitness = 0;
   int fitnessCount = 2;
-  Individual(ArrayList<Neuron> tneurons) {
+  color indcolor;
+  Individual(ArrayList<Neuron> tneurons, color tcolor) {
     neurons = tneurons;
+    indcolor = tcolor;
   }
 
   boolean updateIndividual() {
@@ -82,8 +96,8 @@ class Individual {
       fitnessCount--;
     }
     if (showNetwork) {
-      fill(255, 0, 0, 40);
-      noStroke();
+      fill(indcolor, 100);
+      stroke(0, 50);
       rect(player.x - boxRadius - offsetX + player.w/2, player.y - boxRadius - offsetY + player.h/2, boxRadius * 2, boxRadius * 2);
     }
     up = false;    //check neurons

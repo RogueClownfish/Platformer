@@ -23,7 +23,7 @@ int topReplay = -1;
 Individual replayIndividual;
 boolean showNetwork = false;
 int currentGen = 0;
-int genPopulation = 100;
+int genPopulation = 150;
 
 float mutationChance = 0.1; //float between 0 and 1. 0 = no mutation, 1 is complete
 
@@ -41,9 +41,9 @@ void setup() {
   levels[c] = new Level();
   levels[c].loadLevel((byte)c);
   for (int i = 0; i < topMax; i++) {
-    topIndividuals[i] = new Individual(new ArrayList<Neuron>());
+    topIndividuals[i] = new Individual(new ArrayList<Neuron>(), color(0));
   }
-   player = new Entity(spawnX, spawnY);
+  player = new Entity(spawnX, spawnY);
 }
 
 void draw() {
@@ -83,7 +83,7 @@ void draw() {
             while (rand1 == rand2) {
               rand2 = int(random(topMax));
             }
-            currentGeneration.newChild(topIndividuals[rand1].neurons, topIndividuals[rand2].neurons);
+            currentGeneration.newChild(topIndividuals[rand1].neurons, topIndividuals[rand2].neurons, topIndividuals[rand1].indcolor, topIndividuals[rand2].indcolor);
           }
           for (int i = 0; i < genPopulation; i++) {
             currentGeneration.individuals.get(i).mutateNeurons();
@@ -186,7 +186,7 @@ void keyReleased() {
       topReplay = int(key)-48;
       replayIndividual = topIndividuals[topReplay];
       replayIndividual.fitness = 0;
-      replayIndividual.fitnessCount = 1;
+      replayIndividual.fitnessCount = 2;
       player = new Entity(spawnX, spawnY);
     }
   }
