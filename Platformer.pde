@@ -20,12 +20,13 @@ boolean runningSim = false;
 int topMax = 10;
 Individual[] topIndividuals = new Individual[topMax];
 int topReplay = -1;
-Individual replayIndividual;
+Individual replayIndividual = new Individual(new ArrayList<Neuron>(), color(0));
+;
 boolean showNetwork = false;
 int currentGen = 0;
 int genPopulation = 150;
 
-float mutationChance = 0.1; //float between 0 and 1. 0 = no mutation, 1 is complete
+float mutationChance = 0.2; //float between 0 and 1. 0 = no mutation, 1 is complete
 
 Generation currentGeneration = new Generation(new ArrayList<Individual>());
 
@@ -77,13 +78,12 @@ void draw() {
         if (currentGeneration.update()) {
           currentGeneration = new Generation(new ArrayList<Individual>());  //end of generation, make a new one from the best!
           for (int i = 0; i < genPopulation; i++) {
-            int rand1, rand2;
+            int rand1;
             rand1 = int(random(topMax));
-            rand2 = int(random(topMax));
-            while (rand1 == rand2) {
-              rand2 = int(random(topMax));
+            while (rand1 == int(i/topMax)) {
+              rand1 = int(random(topMax));
             }
-            currentGeneration.newChild(topIndividuals[rand1].neurons, topIndividuals[rand2].neurons, topIndividuals[rand1].indcolor, topIndividuals[rand2].indcolor);
+            currentGeneration.newChild(cloneNeurons(topIndividuals[int(i/topMax)].neurons), cloneNeurons(topIndividuals[rand1].neurons), topIndividuals[int(i/topMax)].indcolor, topIndividuals[rand1].indcolor);
           }
           for (int i = 0; i < genPopulation; i++) {
             currentGeneration.individuals.get(i).mutateNeurons();
@@ -122,7 +122,11 @@ void draw() {
   text("Individual: " + currentGeneration.currentIndividual, width-120, 60);
 
   if (runningSim) {
-    text("Fitness: " + currentGeneration.individuals.get(currentGeneration.currentIndividual).fitness, width-120, 75);
+    if (topReplay == -1) {
+      text("Fitness: " + currentGeneration.individuals.get(currentGeneration.currentIndividual).fitness, width-120, 75);
+    } else {
+      text("Fitness: " + topIndividuals[topReplay].fitness, width-120, 75);
+    }
   }
   if (topReplay >= 0) {
     fill(230);
@@ -184,7 +188,7 @@ void keyReleased() {
   if (key >= '0' && key <= '9') {
     if (int(key)-48 < topMax) {
       topReplay = int(key)-48;
-      replayIndividual = topIndividuals[topReplay];
+      replayIndividual = new Individual(cloneNeurons(topIndividuals[topReplay].neurons), topIndividuals[topReplay].indcolor);
       replayIndividual.fitness = 0;
       replayIndividual.fitnessCount = 2;
       player = new Entity(spawnX, spawnY);

@@ -28,13 +28,13 @@ class Generation {
       boolean parent = random(1) < 0.5;
       if (parent) {
         if (neurons1.size() > 0) {
-          neuronsOut.add(neurons1.get(int(random(neurons1.size()))));
+          neuronsOut.add(cloneNeuron(neurons1.get(int(random(neurons1.size())))));
         } else {
           neuronsOut.add(new Neuron(int(random(-boxRadius, boxRadius)), int(random(-boxRadius, boxRadius)), byte(random(4)), byte(random(1, 4)), random(1) < 0.4));
         }
       } else {
         if (neurons2.size() > 0) {
-          neuronsOut.add(neurons2.get(int(random(neurons2.size()))));
+          neuronsOut.add(cloneNeuron(neurons2.get(int(random(neurons2.size())))));
         } else {
           neuronsOut.add(new Neuron(int(random(-boxRadius, boxRadius)), int(random(-boxRadius, boxRadius)), byte(random(4)), byte(random(1, 4)), random(1) < 0.4));
         }
@@ -51,9 +51,11 @@ class Generation {
           for (int i = 0; i < topMax; i++) { 
             if (tempfit > topIndividuals[i].fitness) {  //put into top 10 or whatever
               for (int j = topMax-1; j > i; j--) {
-                topIndividuals[j] = topIndividuals[j-1];
+                topIndividuals[i] = new Individual(cloneNeurons(topIndividuals[j-1].neurons), topIndividuals[j-1].indcolor);
+                topIndividuals[i].fitness = topIndividuals[j-1].fitness;
               }
-              topIndividuals[i] = individuals.get(currentIndividual);              
+              topIndividuals[i] = new Individual(cloneNeurons(individuals.get(currentIndividual).neurons), individuals.get(currentIndividual).indcolor);
+              topIndividuals[i].fitness = individuals.get(currentIndividual).fitness;
               break;
             }
           }
@@ -141,8 +143,8 @@ class Individual {
     for (int i = 0; i < neurons.size(); i++) {
       if (random(1) <= mutationChance) {  //will mutate this neuron!
         if (random(1) <= mutationChance) {  //move neuron
-          neurons.get(i).x += int(random(-40, 40));
-          neurons.get(i).y += int(random(-40, 40));
+          neurons.get(i).x += int(random(-80, 80));
+          neurons.get(i).y += int(random(-80, 80));
           if (neurons.get(i).x < -boxRadius) {
             neurons.get(i).x = -boxRadius;
           } else if (neurons.get(i).x > boxRadius) {
@@ -267,4 +269,16 @@ class Neuron {
       return 0;
     }
   }
+}
+
+ArrayList<Neuron> cloneNeurons(ArrayList<Neuron> neuronsIn) {
+  ArrayList<Neuron> neuronsOut = new ArrayList<Neuron>();
+  for (int i = 0; i < neuronsIn.size() - 1; i++) {
+    neuronsOut.add(new Neuron(neuronsIn.get(i).x, neuronsIn.get(i).y, neuronsIn.get(i).in, neuronsIn.get(i).out, neuronsIn.get(i).invert));
+  }
+  return neuronsIn;
+}
+
+Neuron cloneNeuron(Neuron neuronIn) {
+  return new Neuron(neuronIn.x, neuronIn.y, neuronIn.in, neuronIn.out, neuronIn.invert);
 }
