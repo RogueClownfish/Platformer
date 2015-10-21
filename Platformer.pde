@@ -3,7 +3,7 @@ float offsetX, offsetY;
 Level[] levels = new Level[3];
 byte c = 0;
 Entity player;
-boolean up, down, left, right;
+int up, down, left, right;
 PImage[] tileSprites;
 PImage[][] joinedSprites;
 PImage[][] charSprites;
@@ -26,7 +26,7 @@ boolean showNetwork = false;
 int currentGen = 0;
 int genPopulation = 150;
 
-float mutationChance = 0.2; //float between 0 and 1. 0 = no mutation, 1 is complete
+float mutationChance = 0.4; //float between 0 and 1. 0 = no mutation, 1 is complete
 
 Generation currentGeneration = new Generation(new ArrayList<Individual>());
 
@@ -146,31 +146,31 @@ boolean inBounds(int x, int y, int lw, int lh) {
 
 void keyPressed() {
   if (key == 'w' || key == 'W') {
-    up = true;
+    up = 1;
   }
   if (key == 's' || key == 'S') {
-    down = true;
+    down = 1;
   }
   if (key == 'a' || key == 'A') {
-    left = true;
+    left = 1;
   }
   if (key == 'd' || key == 'D') {
-    right = true;
+    right = 1;
   }
 }
 
 void keyReleased() {
   if (key == 'w' || key == 'W') {
-    up = false;
+    up = 0;
   }
   if (key == 's' || key == 'S') {
-    down = false;
+    down = 0;
   }
   if (key == 'a' || key == 'A') {
-    left = false;
+    left = 0;
   }
   if (key == 'd' || key == 'D') {
-    right = false;
+    right = 0;
   }
   if (key == ENTER) {
     if (topReplay != -1) {

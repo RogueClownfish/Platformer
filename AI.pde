@@ -51,8 +51,8 @@ class Generation {
           for (int i = 0; i < topMax; i++) { 
             if (tempfit > topIndividuals[i].fitness) {  //put into top 10 or whatever
               for (int j = topMax-1; j > i; j--) {
-                topIndividuals[i] = new Individual(cloneNeurons(topIndividuals[j-1].neurons), topIndividuals[j-1].indcolor);
-                topIndividuals[i].fitness = topIndividuals[j-1].fitness;
+                topIndividuals[j] = new Individual(cloneNeurons(topIndividuals[j-1].neurons), topIndividuals[j-1].indcolor);
+                topIndividuals[j].fitness = topIndividuals[j-1].fitness;
               }
               topIndividuals[i] = new Individual(cloneNeurons(individuals.get(currentIndividual).neurons), individuals.get(currentIndividual).indcolor);
               topIndividuals[i].fitness = individuals.get(currentIndividual).fitness;
@@ -102,28 +102,28 @@ class Individual {
       stroke(0, 50);
       rect(player.x - boxRadius - offsetX + player.w/2, player.y - boxRadius - offsetY + player.h/2, boxRadius * 2, boxRadius * 2);
     }
-    up = false;    //check neurons
-    right = false;
-    left = false;
+    up = 0;    //check neurons
+    right = 0;
+    left = 0;
     for (int i = 0; i <= neurons.size() - 1; i++) {
       switch (neurons.get(i).check()) {
       case 1:
-        up = true;
+        up++;
         break;
       case 2:
-        right = true;
+        right++;
         break;
       case 3:
-        left = true;
+        left++;
         break;
       case -1:
-        up = false;
+        up--;
         break;
       case -2:
-        right = false;
+        right--;
         break;
       case -3:
-        left = false;
+        left--;
         break;
       }
     }

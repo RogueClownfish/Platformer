@@ -37,7 +37,7 @@ class Entity {
   }
 
   void update() {
-    if (up) {
+    if (up > 0) {
       if (underWater || onGround) {
         if (!underWater && dy == 0) {
           dy = -4;
@@ -52,7 +52,7 @@ class Entity {
     } else {
       onGround = false;
     }
-    if (left) {
+    if (left > 0) {
       if (onGround && !underWater && dx > -maxSpeed) {
         dx-=2;
       } else if ((underWater && dx > -maxSpeed/2) || !underWater) {
@@ -60,7 +60,7 @@ class Entity {
       }
       facing = 0;
     }
-    if (right) {
+    if (right > 0) {
       if (onGround && !underWater && dx < maxSpeed) {
         dx+=2;
       } else if ((underWater && dx < maxSpeed/2) || !underWater) {
@@ -68,7 +68,7 @@ class Entity {
       }
       facing = 1;
     }
-    if ((!left && !right) || (left && right)) {
+    if ((left <= 0 && right <= 0) || (left > 0 && right > 0)) {
       if (dx > 0) {
         dx-=0.5;
       } else if (dx < 0) {
@@ -80,7 +80,7 @@ class Entity {
         dx+=0.5;
       }
     }
-    if (!onGround && (!underWater || (underWater && !up && dy < 3))) {
+    if (!onGround && (!underWater || (underWater && up <= 0 && dy < 3))) {
       dy+=0.5;  //gravity
     }
 
