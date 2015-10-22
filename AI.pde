@@ -4,7 +4,7 @@ class Generation {
   Generation(ArrayList<Individual> tindividuals) {
     individuals = tindividuals;
   }
-
+  //Generates a candidate
   void randomIndividual() {
     individuals.add(new Individual(new ArrayList<Neuron>(), color(random(225), random(225), random(225))));
     for (int i = 0; i < 10; i++) {
@@ -14,13 +14,13 @@ class Generation {
       }
     }
   }
-
+  //??? is this for replays? or when to kill the candidate?
   void restartIndividual() {
     individuals.get(currentIndividual).fitness = 0;
     individuals.get(currentIndividual).fitnessCount = 1;
     player = new Entity(spawnX, spawnY);
   }
-
+  //Breeding a new generation
   void newChild(ArrayList<Neuron> neurons1, ArrayList<Neuron> neurons2, color color1, color color2) {
     int neuronCount = (neurons1.size()+neurons2.size())/2 + int(random(abs(neurons1.size()-neurons2.size())));
     ArrayList<Neuron> neuronsOut = new ArrayList<Neuron>();
@@ -86,7 +86,7 @@ class Individual {
     neurons = tneurons;
     indcolor = tcolor;
   }
-
+  //individaul display stuff
   boolean updateIndividual() {
     if (player.x - 40 > fitness) {
       fitness = player.x - 40;
@@ -133,7 +133,7 @@ class Individual {
       return false;
     }
   }
-
+  //duh
   void mutateNeurons() {
     for (int i = 0; i < 3; i++) {
       if (random(1) <= mutationChance) {  //add new (random) neuron
@@ -171,7 +171,7 @@ class Individual {
       }
     }
   }
-
+  //duh #2
   void randomNeuron() {
     neurons.add(new Neuron(int(random(-boxRadius, boxRadius)), int(random(-boxRadius, boxRadius)), byte(random(4)), byte(random(1, 4)), random(1) < 0.4));
   }
@@ -188,7 +188,7 @@ class Neuron {
     out = tout;
     invert = tinvert;
   }
-
+  //Block detection for neurons
   byte check() {
     switch (in) {
     case 0:
@@ -272,7 +272,7 @@ class Neuron {
     }
   }
 }
-
+//??
 ArrayList<Neuron> cloneNeurons(ArrayList<Neuron> neuronsIn) {
   ArrayList<Neuron> neuronsOut = new ArrayList<Neuron>();
   for (int i = 0; i < neuronsIn.size() - 1; i++) {
@@ -280,7 +280,7 @@ ArrayList<Neuron> cloneNeurons(ArrayList<Neuron> neuronsIn) {
   }
   return neuronsIn;
 }
-
+//For breeding a new generation
 Neuron cloneNeuron(Neuron neuronIn) {
   return new Neuron(neuronIn.x, neuronIn.y, neuronIn.in, neuronIn.out, neuronIn.invert);
 }
