@@ -80,10 +80,10 @@ void draw() {
           for (int i = 0; i < genPopulation; i++) {
             int rand1;
             rand1 = int(random(topMax));
-            while (rand1 == int(i/topMax)) {
+            while (rand1 == int(i%topMax)) {
               rand1 = int(random(topMax));
             }
-            currentGeneration.newChild(cloneNeurons(topIndividuals[int(i/topMax)].neurons), cloneNeurons(topIndividuals[rand1].neurons), topIndividuals[int(i/topMax)].indcolor, topIndividuals[rand1].indcolor);
+            currentGeneration.newChild(cloneNeurons(topIndividuals[int(i%topMax)].neurons), cloneNeurons(topIndividuals[rand1].neurons), topIndividuals[int(i%topMax)].indcolor, topIndividuals[rand1].indcolor);
           }
           for (int i = 0; i < genPopulation; i++) {
             currentGeneration.individuals.get(i).mutateNeurons();

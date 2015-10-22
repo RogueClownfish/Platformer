@@ -195,17 +195,19 @@ class Neuron {
       fill(255);
       break;
     case 1:
-      fill(50, 50, 200);
+      fill(0, 0, 255);
       break;
     case 2:
-      fill(50, 200, 50);
+      fill(0, 255, 0);
       break;
     case 3:
-      fill(200, 50, 50);
+      fill(255, 0, 0);
       break;
     }
     if (invert) {
       stroke(0);
+    } else {
+      noStroke();
     }
     boolean check = false;
     if (x <= boxRadius && x >= -boxRadius && y <= boxRadius && y >= -boxRadius && inBounds((player.x + x + player.w/2)/40, (player.y + y + player.h/2)/40, levels[c].levelWidth, levels[c].levelHeight)) {
